@@ -170,22 +170,15 @@ def generate_random_map(num_rows, num_columns, min_path_length, num_obstacles):
             for j in range(len(distance_map[0])):
                 if (distance_map[i][j] == (min_path_length + 1)):
                     possible_source_locations.append((i, j))
-            # print distance_map[i]
 
         chosen_sink_location = (sink_row, sink_column)
         chosen_source_location = choice(possible_source_locations)
-
-        # print "Sink: " + str(chosen_sink_location)
-        # print "Source: " + str(chosen_source_location)
 
         # now that we have source and sink locations, get them orientations, and put them in
         # check all 4 neighbors for the direction of the shortest path
 
         sink_neighbors = get_neighbors(distance_map, chosen_sink_location, 1)
         source_neighbors = get_neighbors(distance_map, chosen_source_location, min_path_length)
-
-        # print "Sink neighbors: " + str(sink_neighbors)
-        # print "Source neighbors: " + str(source_neighbors)
 
         sink_options = []
         source_options = []
@@ -226,6 +219,7 @@ def generate_random_map(num_rows, num_columns, min_path_length, num_obstacles):
         output_map[chosen_source_location[0]][chosen_source_location[1]] = choice(source_options)
 
         # put the sink in place (not facing an obstacle ideally)
+        # also ensure that each sink has at least 2 possible end pieces 
         bad_sinks = []
         for i in range(len(sink_options)):
             if sink_options[i].top and output_map[chosen_sink_location[0] - 1][chosen_sink_location[1]] != None:
@@ -240,7 +234,7 @@ def generate_random_map(num_rows, num_columns, min_path_length, num_obstacles):
             elif sink_options[i].left and output_map[chosen_sink_location[0]][chosen_sink_location[1] - 1] != None:
                 if output_map[chosen_sink_location[0]][chosen_sink_location[1] - 1].isObstacle:
                     bad_sinks.append(sink_options[i])
-
+        
         good_sinks = []
         for sink_option in sink_options:
             if sink_option not in bad_sinks:
@@ -260,8 +254,25 @@ def generate_random_map(num_rows, num_columns, min_path_length, num_obstacles):
                 piece_following_source_location = (chosen_source_location[0] + 1, chosen_source_location[1])
             else: 
                 piece_following_source_location = (chosen_source_location[0], chosen_source_location[1] - 1)
+
+            # ensure that the sink is surrounded by at least 2 options for departure from it
+            reverse_distance_map = get_current_distance_map(output_map, True)
+            sink_has_2_piece_options = False
+            # get_neighbors(matrix, my_position, constraint=None)
+            sink_piece = output_map[chosen_sink_location[0]][chosen_sink_location[1]]
+            if (sink_piece.top):
+                piece_next_to_sink_location = (chosen_sink_location[0] - 1, chosen_sink_location[1])
+            elif (sink_piece.right):
+                piece_next_to_sink_location = (chosen_sink_location[0], chosen_sink_location[1] + 1)
+            elif (sink_piece.bottom):
+                piece_next_to_sink_location = (chosen_sink_location[0] + 1, chosen_sink_location[1])
+            else: 
+                piece_next_to_sink_location = (chosen_sink_location[0], chosen_sink_location[1] - 1)
+
+            min_path_neighbors = get_neighbors(reverse_distance_map, piece_next_to_sink_location, (min_path_length - 2))
             
-            if (updated_distance_map[piece_following_source_location[0]][piece_following_source_location[1]] == (min_path_length - 1)):
+            if (updated_distance_map[piece_following_source_location[0]][piece_following_source_location[1]] == (min_path_length - 1)
+                and len(min_path_neighbors) >= 2):
                 entire_map_requirements_met = True
         else:
             output_map[chosen_sink_location[0]][chosen_sink_location[1]] = choice(sink_options)
@@ -269,23 +280,33 @@ def generate_random_map(num_rows, num_columns, min_path_length, num_obstacles):
 
     return output_map
 
-""" get_current_distance_map(piece_matrix)
+""" get_current_distance_map(piece_matrix, reverse_map)
     Description: generate the current distance map based on the current piece matrix.
     Handles barriers and the directionality of the current open piece and sink. 
+    The reverse_map flag, if true, returns the opposite of the non-reversed map
+    where the sink and the source are flipped. 
 """
-def get_current_distance_map(piece_matrix):
+def get_current_distance_map(piece_matrix, reverse_map=False):
     # we're going to treat the sink as the piece next to the sink's opening
     # let's first get that location
     sink = None
     for i in range(len(piece_matrix)):
         for j in range(len(piece_matrix[0])):
             if piece_matrix[i][j] != None:
-                if piece_matrix[i][j].isSink:
+                if (piece_matrix[i][j].isSink and reverse_map == False):
+                    sink = piece_matrix[i][j]
+                    actual_sink_location = (i, j)
+                    break
+                    # if we're reversing this - we want to look for the source not the sink
+                elif (piece_matrix[i][j].isSource and reverse_map == True):
                     sink = piece_matrix[i][j]
                     actual_sink_location = (i, j)
                     break
     if (sink == None):
-        print "There is no sink in this matrix - cannot get distance map"
+        if (reverse_map == False):
+            print "There is no sink in this matrix - cannot get distance map"
+        else: 
+            print "There is no source in this matrix - cannot get distance map"
         return
     if (sink.top):
         sink_location = (actual_sink_location[0] - 1, actual_sink_location[1])
@@ -655,63 +676,6 @@ def print_distance_path_map(input_map):
                 row_str += ", "
         row_str += "]"
         print row_str
-
-if __name__ == "__main__":
-
-    example_piece_matrix1 = [[None for j in range(3)] for i in range(3)]
-    example_piece_matrix1[0][0] = game_piece_choices_dict[4]
-    example_piece_matrix1[0][1] = game_piece_choices_dict[5]
-    example_piece_matrix1[0][2] = game_piece_choices_dict[6]
-    example_piece_matrix1[1][0] = game_piece_choices_dict[2]
-    example_piece_matrix1[1][2] = game_piece_choices_dict[2]
-    example_piece_matrix1[2][0] = game_piece_choices_dict[1]
-    example_piece_matrix1[2][1] = game_piece_choices_dict[5]
-    example_piece_matrix1[2][2] = game_piece_choices_dict[3]
-
-    draw_path(example_piece_matrix1)
-
-    example_piece_matrix2 = [[None for j in range(3)] for i in range(4)]
-    example_piece_matrix2[0][0] = source_choices_dict[2]
-    example_piece_matrix2[0][1] = game_piece_choices_dict[6]
-    example_piece_matrix2[1][1] = game_piece_choices_dict[2]
-    example_piece_matrix2[2][1] = game_piece_choices_dict[2]
-    example_piece_matrix2[3][1] = game_piece_choices_dict[1]
-    example_piece_matrix2[3][2] = sink_choices_dict[4]
-
-    draw_path(example_piece_matrix2)
-
-    example_piece_matrix3 = [[None for j in range(3)] for i in range(3)]
-    example_piece_matrix3[2][2] = source_choices_dict[4]
-    example_piece_matrix3[0][2] = sink_choices_dict[4]
-    example_piece_matrix3[2][1] = game_piece_choices_dict[1]
-
-    draw_path(example_piece_matrix3)
-
-
-    [valid_pieces, invalid_pieces] = get_valid_and_invalid_pieces(example_piece_matrix3)
-    print "Valid pieces: "
-    for piece in valid_pieces:
-        print piece
-
-    auto_add_piece_to_matrix(example_piece_matrix3, game_piece_choices_dict[2])
-
-    draw_path(example_piece_matrix3)
-
-    [valid_pieces, invalid_pieces] = get_valid_and_invalid_pieces(example_piece_matrix3)
-    print "Valid pieces: "
-    for piece in valid_pieces:
-        print piece
-
-    rand_map = generate_random_map(7, 7, 9, 1)
-    draw_path(rand_map)
-
-    [valid_pieces, invalid_pieces] = get_valid_and_invalid_pieces(rand_map)
-    print "Valid pieces: "
-    for piece in valid_pieces:
-        print piece
-
-
-    print obstacle_piece
 
 
 

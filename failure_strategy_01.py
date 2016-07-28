@@ -3,6 +3,7 @@ from railroads_python_design_testing import *
 from random import choice
 
 def get_next_optimal_piece(piece_matrix):
+
     current_distance_map = get_current_distance_map(piece_matrix)
 
     (current_open_piece_location, input_flow_direction) = get_open_piece_location_and_flow_direction(piece_matrix)
@@ -84,6 +85,8 @@ def execute_optimal_path(piece_matrix, min_path_length):
         draw_path(piece_matrix)
         print ('\n\n\n')
 
+    print is_valid_path(piece_matrix)
+
 
 if __name__ == "__main__":
 
@@ -94,3 +97,6 @@ if __name__ == "__main__":
     draw_path(rand_map)
 
     execute_optimal_path(rand_map, path_length)
+
+
+
