@@ -361,6 +361,36 @@ def get_current_distance_map(piece_matrix, reverse_map=False):
 
     return distance_map
 
+""" get_current_heatmap(matrix)
+    Description: Returns a distance map matrix of sorts where every space that
+    is on a minimum path from source to sink is represented by a true value and
+    every space not on that minimum path is represented by a false value (this
+    includes the sink and sources themselves)
+"""
+def get_current_heatmap(matrix):
+    # initialize the heatmap
+    num_rows = len(matrix)
+    num_columns = len(matrix[0])
+    combined_distance_map = [[0 for j in range(num_columns)] for i in range(num_rows)]
+    heatmap = [[False for j in range(num_columns)] for i in range(num_rows)]
+
+    distance_map = get_current_distance_map(matrix)
+    reverse_distance_map = get_current_distance_map(matrix, True)
+
+    min_val = 100
+    for i in range(num_rows):
+        for j in range(num_columns):
+            combined_distance_map[i][j] = distance_map[i][j] + reverse_distance_map[i][j]
+            if (combined_distance_map[i][j] < min_val and combined_distance_map[i][j] > 0):
+                min_val = combined_distance_map[i][j]
+
+    for i in range(num_rows):
+        for j in range (num_columns):
+            if (combined_distance_map[i][j] == min_val):
+                heatmap[i][j] = True
+
+    return heatmap
+
 
 """ get_neighbors(matrix, my_position, constraint=None)
     Description: Get all neighbors (top, right, left, bottom) of a particular 
@@ -676,7 +706,6 @@ def print_distance_path_map(input_map):
                 row_str += ", "
         row_str += "]"
         print row_str
-
 
 
 
