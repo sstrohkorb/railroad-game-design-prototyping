@@ -291,7 +291,34 @@ def get_weak_indep_paths_piecewise(i, j, grid, heatmap):
                 indep_piece_lists.append((current, test))
                 index_pairs_of_indep_pieces.append([i,j])
     return indep_piece_lists
-	
+
+#BELOW IS FUNCTION MOVED FROM OTHER FILE "get_path_map"
+
+def get_path_map(distance_grid):
+    #initialize path_map to all 1's
+    path_map = [[1 for i in range(len(distance_grid))] for i in range(len(distance_grid[0]))]
+    changes_being_made = True
+    while (changes_being_made):
+        changes_being_made = False
+        #iterating over all matrix entries
+        for i in range(len(path_map)):
+            for j in range(len(path_map[0])):
+                childlist = get_children_locations(i,j,distance_grid))
+                #path_map parent value is equal to sum of path_map childs values
+                if (1 <= len(childlist) =< 4):
+                    #val equals sum of child values
+                    val = 0
+                    for z in childlist:
+                    	one = z[0]
+                    	two = z[1]
+                    	val = val + path_map[one][two]
+                    if path_map[i][j] != val:
+                    	path_map[i][j] = val
+                    	changes_being_made = True
+    #function returns array path_map with now the correct values
+    return path_map
+    #is it a problem that the "sink" is a 1 instead of a 0 in the path_map?
+
 
 
 
