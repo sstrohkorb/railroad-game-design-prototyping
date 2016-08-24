@@ -1,7 +1,6 @@
-
+from random import choice
 from railroads_python_design_testing import *
-from path_funx import get_children_locations
-from path_funx import get_path_map
+from path_funx import *
 
 
 '''get_path_map makes a call to 'get_children_locations' many times as it loops through an array. 'get_path_map' takes 
@@ -22,6 +21,23 @@ if __name__ == "__main__":
     print "\nDistance map:"
     print_distance_path_map(distance_map)
 
-    path_map = path_funx.get_path_map(distance_map)
-    print "\nPath map:"
-    print_distance_path_map(path_map)
+    path_map = get_path_map(distance_map)
+    # print "\nPath map:"
+    # print_distance_path_map(path_map)
+
+    heat_map = get_current_heatmap(rand_map)
+    NR_board = get_NR_board(distance_map, heat_map)
+    print "\nPoints of No Return map:"
+    print_distance_path_map(NR_board)
+
+    possible_points_of_no_return = []
+    for i in range(len(NR_board)):
+        for j in range(len(NR_board[0])):
+            if (NR_board[i][j] == 1):
+                possible_points_of_no_return.append((i, j))
+
+    random_point_of_no_return = choice(possible_points_of_no_return)
+
+    print "Point of no return chosen: " + str(random_point_of_no_return)
+
+    print get_indep_paths(random_point_of_no_return[0], random_point_of_no_return[1], distance_map, heat_map)
