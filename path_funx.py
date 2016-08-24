@@ -23,8 +23,8 @@ def get_children_locations(i, j, grid):
         if ((grid[i][j - 1] + 1 == grid[i][j]) and grid[i][j - 1] != -1):
             child_list.append((i, j - 1))
     #below: extending child_list with entries of -2 if child_list does not have 4 children. most don't.
-    if len(child_list) != 4:
-    	child_list.extend((4 - len(child_list)) * [-2])
+    # if len(child_list) != 4:
+    # 	child_list.extend((4 - len(child_list)) * [-2])
     #function returns a list of child locations, so a list of TUPLES
     return child_list
 
@@ -41,26 +41,37 @@ class Node(object):
                
     def build_tree(self, grid):
         children = get_children_locations(self.info[0], self.info[1], grid)
-        #child 1
-        if children[0] == -2:
-            self.child1 = None
-        else:
-            self.child1 = Node(children[0]).build_tree(grid)
-        #child 2
-        if children[1] == -2:
-            self.child2 = None
-        else:
-            self.child2 = Node(children[1]).build_tree(grid)
-        #child 3
-        if children[2] == -2:
-            self.child3 = None
-        else:
-            self.child3 = Node(children[2]).build_tree(grid)
-        #child 4
-        if children[3] == -2:
-            self.child4 = None
-        else:
-            self.child4 = Node(children[3]).build_tree(grid)
+        # #child 1
+        # if children[0] == -2:
+        #     self.child1 = None
+        # else:
+        #     self.child1 = Node(children[0]).build_tree(grid)
+        # #child 2
+        # if children[1] == -2:
+        #     self.child2 = None
+        # else:
+        #     self.child2 = Node(children[1]).build_tree(grid)
+        # #child 3
+        # if children[2] == -2:
+        #     self.child3 = None
+        # else:
+        #     self.child3 = Node(children[2]).build_tree(grid)
+        # #child 4
+        # if children[3] == -2:
+        #     self.child4 = None
+        # else:
+        #     self.child4 = Node(children[3]).build_tree(grid)
+
+        for i in range(len(children)):
+            if (i == 0):
+                self.child1 = Node(children[i]).build_tree(grid)
+            elif (i == 1):
+                self.child2 = Node(children[i]).build_tree(grid)
+            elif (i == 2):
+                self.child3 = Node(children[i]).build_tree(grid)
+            elif (i == 3):
+                self.child4 = Node(children[i]).build_tree(grid)
+
         return self
     
     def is_leaf(self):
@@ -303,9 +314,10 @@ def get_path_map(distance_grid):
         #iterating over all matrix entries
         for i in range(len(path_map)):
             for j in range(len(path_map[0])):
-                childlist = get_children_locations(i,j,distance_grid))
+                childlist = get_children_locations(i,j,distance_grid)
                 #path_map parent value is equal to sum of path_map childs values
-                if (1 <= len(childlist) =< 4):
+                # Sarah: this following statement is unnecessary
+                if (1 <= len(childlist) and len(childlist) <= 4):       # Sarah: Originally (1 <= len(childlist) =< 4) - wrong
                     #val equals sum of child values
                     val = 0
                     for z in childlist:
@@ -318,8 +330,5 @@ def get_path_map(distance_grid):
     #function returns array path_map with now the correct values
     return path_map
     #is it a problem that the "sink" is a 1 instead of a 0 in the path_map?
-
-
-
 
 
