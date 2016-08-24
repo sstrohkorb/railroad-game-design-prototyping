@@ -304,7 +304,7 @@ def get_weak_indep_paths_piecewise(i, j, grid, heatmap):
     return indep_piece_lists
 
 #BELOW IS FUNCTION MOVED FROM OTHER FILE "get_path_map"
-
+'''
 def get_path_map(distance_grid):
     #initialize path_map to all 1's
     path_map = [[1 for i in range(len(distance_grid))] for i in range(len(distance_grid[0]))]
@@ -330,5 +330,6 @@ def get_path_map(distance_grid):
     #function returns array path_map with now the correct values
     return path_map
     #is it a problem that the "sink" is a 1 instead of a 0 in the path_map?
+'''
 
 
