@@ -14,14 +14,14 @@ if __name__ == "__main__":
     path_length = 9
 
     rand_map = generate_random_map(7, 7, path_length, 9)
-    print "Original path: "
+    print "Original game board: "
     draw_path(rand_map)
 
     distance_map = get_current_distance_map(rand_map)
     print "\nDistance map:"
     print_distance_path_map(distance_map)
 
-    path_map = get_path_map(distance_map)
+    # path_map = get_path_map(distance_map)
     # print "\nPath map:"
     # print_distance_path_map(path_map)
 
@@ -38,6 +38,12 @@ if __name__ == "__main__":
 
     random_point_of_no_return = choice(possible_points_of_no_return)
 
-    print "Point of no return chosen: " + str(random_point_of_no_return)
+    print "\nPoint of no return chosen: " + str(random_point_of_no_return)
 
-    print get_indep_paths(random_point_of_no_return[0], random_point_of_no_return[1], distance_map, heat_map)
+    random_point_of_no_return_paths_list = get_paths_list(random_point_of_no_return[0], random_point_of_no_return[1], distance_map, heat_map)
+    print "\nAll Paths List for point of no return chosen:"
+    print_distance_path_map(random_point_of_no_return_paths_list)
+
+    random_point_of_no_return_indep_paths = get_indep_paths(random_point_of_no_return[0], random_point_of_no_return[1], distance_map, heat_map)
+    print "\nALL Indep Path pairs for point of no return chosen:"
+    print_indep_path_pairs(random_point_of_no_return_indep_paths)

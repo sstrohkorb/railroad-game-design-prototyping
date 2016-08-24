@@ -178,7 +178,7 @@ def do_lists_intersect(a, b):
 '''returns a list. each element is a 2-tuple of two rows (actually 'paths') in path_matrix that do not intersect.'''
 def get_indep_paths(i, j, grid, heatmap):
     path_matrix = get_paths_list(i, j, grid, heatmap)
-    index_pairs_of_indep_paths = []
+    #index_pairs_of_indep_paths = []
     indep_paths = []
     #index_pairs_of_intersecting_paths = [] 
     for i in range(len(path_matrix)):
@@ -187,7 +187,7 @@ def get_indep_paths(i, j, grid, heatmap):
             test = path_matrix[j]
             if do_lists_intersect(current, test) == False:
                 indep_paths.append((current, test))
-                index_pairs_of_indep_paths.append([i,j])
+                #index_pairs_of_indep_paths.append([i,j])
             else:
                 #index_pairs_of_intersecting_paths.append([i,j])
                 pass
@@ -332,4 +332,13 @@ def get_path_map(distance_grid):
     #is it a problem that the "sink" is a 1 instead of a 0 in the path_map?
 '''
 
-
+def print_indep_path_pairs(pairs_list):
+    print "["
+    for i in range(len(pairs_list)):
+        row1 = "(" + str(pairs_list[i][0]) + "," 
+        row2 = " " + str(pairs_list[i][1]) + "),"
+        print row1
+        print row2
+        if i != (len(pairs_list) - 1):
+            print ""
+    print "]"
